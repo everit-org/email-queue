@@ -18,11 +18,11 @@ package org.everit.email.queue;
 /**
  * Information to create pass on job.
  */
-public class CreatePassOnJobParam {
+public class PassOnJobParam {
 
   public int max;
 
-  public CreatePassOnJobParam max(final int max) {
+  public PassOnJobParam max(final int max) {
     this.max = max;
     return this;
   }

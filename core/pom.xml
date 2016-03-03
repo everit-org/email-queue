@@ -36,7 +36,7 @@
   <name>Everit - Email Queue</name>
 
   <properties>
-    <projectpath>email-store-ri</projectpath>
+    <projectpath>email-queue</projectpath>
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
   </properties>

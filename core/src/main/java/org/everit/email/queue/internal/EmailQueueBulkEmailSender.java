@@ -20,7 +20,7 @@ import java.time.Instant;
 import java.util.List;
 
 import org.everit.email.Email;
-import org.everit.email.queue.CreatePassOnJobParam;
+import org.everit.email.queue.PassOnJobParam;
 import org.everit.email.queue.schema.qdsl.QQueueMail;
 import org.everit.email.sender.BulkEmailSender;
 import org.everit.email.sender.EmailSender;
@@ -39,27 +39,27 @@ import com.mysema.query.types.Projections;
 public class EmailQueueBulkEmailSender implements BulkEmailSender {
 
   /**
-   * Queue email data holder.
+   * Queued email data holder.
    */
-  public static class QueueEmailDTO {
+  public static class QueuedEmailDTO {
 
-    public long queueEmailId;
+    public long queuedEmailId;
 
     public long storedEmailId;
   }
 
-  private EmailSender emailSender;
-
   private EmailStore emailStore;
 
   private QuerydslSupport querydslSupport;
+
+  private EmailSender sink;
 
   private TransactionPropagator transactionPropagator;
 
   /**
    * Simple constructor.
    *
-   * @param emailSender
+   * @param sink
    *          an {@link EmailSender} instance.
    * @param emailStore
    *          an {@link EmailStore} instance.
@@ -68,9 +68,9 @@ public class EmailQueueBulkEmailSender implements BulkEmailSender {
    * @param transactionPropagator
    *          a {@link TransactionPropagator} instance.
    */
-  public EmailQueueBulkEmailSender(final EmailSender emailSender, final EmailStore emailStore,
+  public EmailQueueBulkEmailSender(final EmailSender sink, final EmailStore emailStore,
       final QuerydslSupport querydslSupport, final TransactionPropagator transactionPropagator) {
-    this.emailSender = emailSender;
+    this.sink = sink;
     this.emailStore = emailStore;
     this.querydslSupport = querydslSupport;
     this.transactionPropagator = transactionPropagator;
@@ -84,16 +84,16 @@ public class EmailQueueBulkEmailSender implements BulkEmailSender {
   /**
    * Creates pass on job that send mails.
    */
-  public Runnable createPassOnJob(final CreatePassOnJobParam param) {
+  public Runnable createPassOnJob(final PassOnJobParam param) {
     return () -> {
       transactionPropagator.required(() -> {
-        List<QueueEmailDTO> queuedEmails = selectAndLockQueueEmail(param);
-        try (BulkEmailSender bulkEmailSender = emailSender.openBulkEmailSender()) {
-          for (QueueEmailDTO queueEmail : queuedEmails) {
-            Email mail = emailStore.read(queueEmail.storedEmailId);
+        List<QueuedEmailDTO> queuedEmails = selectAndLockQueuedEmail(param);
+        try (BulkEmailSender bulkEmailSender = sink.openBulkEmailSender()) {
+          for (QueuedEmailDTO queuedEmail : queuedEmails) {
+            Email mail = emailStore.read(queuedEmail.storedEmailId);
             bulkEmailSender.sendEmail(mail);
-            deleteQueueEmail(queueEmail.queueEmailId);
-            emailStore.remove(queueEmail.storedEmailId);
+            deleteQueuedEmail(queuedEmail.queuedEmailId);
+            emailStore.remove(queuedEmail.storedEmailId);
           }
         }
         return;
@@ -101,11 +101,11 @@ public class EmailQueueBulkEmailSender implements BulkEmailSender {
     };
   }
 
-  private void deleteQueueEmail(final long queueEmailId) {
+  private void deleteQueuedEmail(final long queuedEmailId) {
     querydslSupport.execute((connection, configuration) -> {
       QQueueMail qQueueMail = QQueueMail.queueMail;
       return new SQLDeleteClause(connection, configuration, qQueueMail)
-          .where(qQueueMail.queueEmailId.eq(queueEmailId))
+          .where(qQueueMail.queuedEmailId.eq(queuedEmailId))
           .execute();
     });
   }
@@ -120,7 +120,7 @@ public class EmailQueueBulkEmailSender implements BulkEmailSender {
     });
   }
 
-  private List<QueueEmailDTO> selectAndLockQueueEmail(final CreatePassOnJobParam param) {
+  private List<QueuedEmailDTO> selectAndLockQueuedEmail(final PassOnJobParam param) {
     return querydslSupport.execute((connection, configuration) -> {
       QQueueMail qQueueMail = QQueueMail.queueMail;
       return new SQLQuery(connection, configuration)
@@ -128,8 +128,8 @@ public class EmailQueueBulkEmailSender implements BulkEmailSender {
           .orderBy(qQueueMail.storedTimestamp.asc())
           .limit(param.max)
           .forUpdate()
-          .list(Projections.fields(QueueEmailDTO.class,
-              qQueueMail.queueEmailId,
+          .list(Projections.fields(QueuedEmailDTO.class,
+              qQueueMail.queuedEmailId,
               qQueueMail.storedEmailId));
     });
   }

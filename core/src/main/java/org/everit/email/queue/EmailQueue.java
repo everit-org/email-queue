@@ -21,9 +21,6 @@ import org.everit.email.Email;
 import org.everit.email.queue.internal.EmailQueueBulkEmailSender;
 import org.everit.email.sender.BulkEmailSender;
 import org.everit.email.sender.EmailSender;
-import org.everit.email.store.EmailStore;
-import org.everit.persistence.querydsl.support.QuerydslSupport;
-import org.everit.transaction.propagator.TransactionPropagator;
 
 /**
  * Email Queue Sender implementation of {@link EmailQueueBulkEmailSender}.
@@ -35,33 +32,28 @@ public class EmailQueue implements EmailSender {
   /**
    * Simple constructor.
    *
-   * @param emailSender
-   *          an {@link EmailSender} instance. Cannot be <code>null</code>!
-   * @param emailStore
-   *          an {@link EmailStore} instance. Cannot be <code>null</code>!
-   * @param querydslSupport
-   *          a {@link QuerydslSupport} instance. Cannot be <code>null</code>!
-   * @param transactionPropagator
-   *          a {@link TransactionPropagator} instance. Cannot be <code>null</code>!
+   * @param emailQueueParam
+   *          an {@link EmailQueueParameter} object. Cannot be <code>null</code>.
    */
-  public EmailQueue(final EmailSender emailSender, final EmailStore emailStore,
-      final QuerydslSupport querydslSupport, final TransactionPropagator transactionPropagator) {
-    Objects.requireNonNull(emailSender, "emailSender cannot be null.");
-    Objects.requireNonNull(emailStore, "emailStore cannot be null.");
-    Objects.requireNonNull(querydslSupport, "querydslSupport cannot be null.");
-    Objects.requireNonNull(transactionPropagator, "transactionPropagator cannot be null.");
+  public EmailQueue(final EmailQueueParameter emailQueueParam) {
+    Objects.requireNonNull(emailQueueParam, "emailQueueParam cannot be null.");
+    Objects.requireNonNull(emailQueueParam.emailSender, "sink cannot be null.");
+    Objects.requireNonNull(emailQueueParam.emailStore, "emailStore cannot be null.");
+    Objects.requireNonNull(emailQueueParam.querydslSupport, "querydslSupport cannot be null.");
+    Objects.requireNonNull(emailQueueParam.transactionPropagator,
+        "transactionPropagator cannot be null.");
     emailQueueBulkEmailSender =
-        new EmailQueueBulkEmailSender(emailSender, emailStore, querydslSupport,
-            transactionPropagator);
+        new EmailQueueBulkEmailSender(emailQueueParam.emailSender, emailQueueParam.emailStore,
+            emailQueueParam.querydslSupport, emailQueueParam.transactionPropagator);
   }
 
   /**
    * Creates pass on job that send mails.
    *
    * @param param
-   *          a {@link CreatePassOnJobParam} object. Cannot be <code>null</code>!
+   *          a {@link PassOnJobParam} object. Cannot be <code>null</code>!
    */
-  public Runnable createPassOnJob(final CreatePassOnJobParam param) {
+  public Runnable createPassOnJob(final PassOnJobParam param) {
     Objects.requireNonNull(param, "param cannot be null.");
     return emailQueueBulkEmailSender.createPassOnJob(param);
   }

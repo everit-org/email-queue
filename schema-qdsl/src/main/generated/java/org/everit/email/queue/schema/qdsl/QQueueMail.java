@@ -40,7 +40,7 @@ public class QQueueMail extends com.mysema.query.sql.RelationalPathBase<QQueueMa
 
     public class PrimaryKeys {
 
-        public final com.mysema.query.sql.PrimaryKey<QQueueMail> emqueueQueueMailPk = createPrimaryKey(queueEmailId);
+        public final com.mysema.query.sql.PrimaryKey<QQueueMail> emqueueQueuedMailPk = createPrimaryKey(queuedEmailId);
 
     }
 
@@ -50,7 +50,7 @@ public class QQueueMail extends com.mysema.query.sql.RelationalPathBase<QQueueMa
 
     }
 
-    public final NumberPath<Long> queueEmailId = createNumber("queueEmailId", Long.class);
+    public final NumberPath<Long> queuedEmailId = createNumber("queuedEmailId", Long.class);
 
     public final NumberPath<Long> storedEmailId = createNumber("storedEmailId", Long.class);
 
@@ -81,7 +81,7 @@ public class QQueueMail extends com.mysema.query.sql.RelationalPathBase<QQueueMa
     }
 
     public void addMetadata() {
-        addMetadata(queueEmailId, ColumnMetadata.named("QUEUE_EMAIL_ID").ofType(-5).withSize(19).notNull());
+        addMetadata(queuedEmailId, ColumnMetadata.named("QUEUED_EMAIL_ID").ofType(-5).withSize(19).notNull());
         addMetadata(storedEmailId, ColumnMetadata.named("STORED_EMAIL_ID").ofType(-5).withSize(19).notNull());
         addMetadata(storedTimestamp, ColumnMetadata.named("STORED_TIMESTAMP").ofType(93).withSize(23).withDigits(10).notNull());
     }
