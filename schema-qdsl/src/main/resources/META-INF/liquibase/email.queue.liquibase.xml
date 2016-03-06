@@ -26,19 +26,19 @@
 
   <changeSet id="1.0.0" author="everit">
 
-    <createTable tableName="EMQUEUE_QUEUE_MAIL">
+    <createTable tableName="EMQUEUE_EMAIL_QUEUE">
       <column name="QUEUED_EMAIL_ID" type="BIGINT" autoIncrement="true">
-        <constraints primaryKey="true" nullable="false" primaryKeyName="PK_EMQUEUE_QUEUED_MAIL" />
+        <constraints primaryKey="true" nullable="false" primaryKeyName="PK_EMQUEUE_EMAIL_QUEUE" />
       </column>
-      <column name="STORED_EMAIL_ID" type="BIGINT">
+      <column name="STORED_EMAIL_ID" type="bigint">
         <constraints nullable="false" />
       </column>
-	  <column name="STORED_TIMESTAMP" type="DATETIME">
+	  <column name="TIMESTAMP_" type="datetime">
         <constraints nullable="false" />
       </column>
     </createTable>       
-    <addForeignKeyConstraint constraintName="FK_QUEUE_MAIL_EMSTR_EMAIL"
-      baseColumnNames="STORED_EMAIL_ID" baseTableName="EMQUEUE_QUEUE_MAIL" referencedColumnNames="STORED_EMAIL_ID"
+    <addForeignKeyConstraint constraintName="FK_EMQUEUE_EMAIL_QUEUE_EMAIL"
+      baseColumnNames="STORED_EMAIL_ID" baseTableName="EMQUEUE_EMAIL_QUEUE" referencedColumnNames="STORED_EMAIL_ID"
       referencedTableName="EMSTR_EMAIL" />
 
   </changeSet>

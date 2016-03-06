@@ -33,9 +33,9 @@ public class EmailQueue implements EmailSender {
    * Simple constructor.
    *
    * @param emailQueueParam
-   *          an {@link EmailQueueParameter} object. Cannot be <code>null</code>.
+   *          an {@link EmailQueueConfiguration} object. Cannot be <code>null</code>.
    */
-  public EmailQueue(final EmailQueueParameter emailQueueParam) {
+  public EmailQueue(final EmailQueueConfiguration emailQueueParam) {
     Objects.requireNonNull(emailQueueParam, "emailQueueParam cannot be null.");
     Objects.requireNonNull(emailQueueParam.emailSender, "sink cannot be null.");
     Objects.requireNonNull(emailQueueParam.emailStore, "emailStore cannot be null.");
@@ -51,9 +51,9 @@ public class EmailQueue implements EmailSender {
    * Creates pass on job that send mails.
    *
    * @param param
-   *          a {@link PassOnJobParam} object. Cannot be <code>null</code>!
+   *          a {@link PassOnJobConfiguration} object. Cannot be <code>null</code>!
    */
-  public Runnable createPassOnJob(final PassOnJobParam param) {
+  public Runnable createPassOnJob(final PassOnJobConfiguration param) {
     Objects.requireNonNull(param, "param cannot be null.");
     return emailQueueBulkEmailSender.createPassOnJob(param);
   }

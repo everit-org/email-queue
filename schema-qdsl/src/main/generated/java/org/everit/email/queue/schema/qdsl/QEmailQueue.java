@@ -29,24 +29,24 @@ import com.mysema.query.sql.ColumnMetadata;
 
 
 /**
- * QQueueMail is a Querydsl query type for QQueueMail
+ * QEmailQueue is a Querydsl query type for QEmailQueue
  */
 @Generated("com.mysema.query.sql.codegen.MetaDataSerializer")
-public class QQueueMail extends com.mysema.query.sql.RelationalPathBase<QQueueMail> {
+public class QEmailQueue extends com.mysema.query.sql.RelationalPathBase<QEmailQueue> {
 
-    private static final long serialVersionUID = -1655102570;
+    private static final long serialVersionUID = -367369369;
 
-    public static final QQueueMail queueMail = new QQueueMail("EMQUEUE_QUEUE_MAIL");
+    public static final QEmailQueue emailQueue = new QEmailQueue("EMQUEUE_EMAIL_QUEUE");
 
     public class PrimaryKeys {
 
-        public final com.mysema.query.sql.PrimaryKey<QQueueMail> emqueueQueuedMailPk = createPrimaryKey(queuedEmailId);
+        public final com.mysema.query.sql.PrimaryKey<QEmailQueue> emqueueEmailQueuePk = createPrimaryKey(queuedEmailId);
 
     }
 
     public class ForeignKeys {
 
-        public final com.mysema.query.sql.ForeignKey<org.everit.email.store.ri.schema.qdsl.QEmail> queueMailEmstrEmailFk = createForeignKey(storedEmailId, "STORED_EMAIL_ID");
+        public final com.mysema.query.sql.ForeignKey<org.everit.email.store.ri.schema.qdsl.QEmail> storedEmailFk = createForeignKey(storedEmailId, "STORED_EMAIL_ID");
 
     }
 
@@ -54,36 +54,36 @@ public class QQueueMail extends com.mysema.query.sql.RelationalPathBase<QQueueMa
 
     public final NumberPath<Long> storedEmailId = createNumber("storedEmailId", Long.class);
 
-    public final DateTimePath<java.sql.Timestamp> storedTimestamp = createDateTime("storedTimestamp", java.sql.Timestamp.class);
+    public final DateTimePath<java.sql.Timestamp> timestamp_ = createDateTime("timestamp_", java.sql.Timestamp.class);
 
     public final PrimaryKeys pk = new PrimaryKeys();
 
     public final ForeignKeys fk = new ForeignKeys();
 
-    public QQueueMail(String variable) {
-        super(QQueueMail.class, forVariable(variable), "org.everit.email.queue", "EMQUEUE_QUEUE_MAIL");
+    public QEmailQueue(String variable) {
+        super(QEmailQueue.class, forVariable(variable), "org.everit.email.queue", "EMQUEUE_EMAIL_QUEUE");
         addMetadata();
     }
 
-    public QQueueMail(String variable, String schema, String table) {
-        super(QQueueMail.class, forVariable(variable), schema, table);
+    public QEmailQueue(String variable, String schema, String table) {
+        super(QEmailQueue.class, forVariable(variable), schema, table);
         addMetadata();
     }
 
-    public QQueueMail(Path<? extends QQueueMail> path) {
-        super(path.getType(), path.getMetadata(), "org.everit.email.queue", "EMQUEUE_QUEUE_MAIL");
+    public QEmailQueue(Path<? extends QEmailQueue> path) {
+        super(path.getType(), path.getMetadata(), "org.everit.email.queue", "EMQUEUE_EMAIL_QUEUE");
         addMetadata();
     }
 
-    public QQueueMail(PathMetadata<?> metadata) {
-        super(QQueueMail.class, metadata, "org.everit.email.queue", "EMQUEUE_QUEUE_MAIL");
+    public QEmailQueue(PathMetadata<?> metadata) {
+        super(QEmailQueue.class, metadata, "org.everit.email.queue", "EMQUEUE_EMAIL_QUEUE");
         addMetadata();
     }
 
     public void addMetadata() {
         addMetadata(queuedEmailId, ColumnMetadata.named("QUEUED_EMAIL_ID").ofType(-5).withSize(19).notNull());
         addMetadata(storedEmailId, ColumnMetadata.named("STORED_EMAIL_ID").ofType(-5).withSize(19).notNull());
-        addMetadata(storedTimestamp, ColumnMetadata.named("STORED_TIMESTAMP").ofType(93).withSize(23).withDigits(10).notNull());
+        addMetadata(timestamp_, ColumnMetadata.named("TIMESTAMP_").ofType(93).withSize(23).withDigits(10).notNull());
     }
 
 }

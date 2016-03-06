@@ -29,7 +29,7 @@
 
   <groupId>org.everit.email</groupId>
   <artifactId>org.everit.email.queue.schema.qdsl</artifactId>
-  <version>1.0.0-SNAPSHOT</version>
+  <version>1.0.0</version>
 
   <packaging>bundle</packaging>
 
@@ -143,7 +143,7 @@
     <dependency>
       <groupId>org.everit.email</groupId>
       <artifactId>org.everit.email.store.ri.schema.qdsl</artifactId>
-      <version>1.0.0-SNAPSHOT</version>
+      <version>1.0.0</version>
     </dependency>
   </dependencies>
 

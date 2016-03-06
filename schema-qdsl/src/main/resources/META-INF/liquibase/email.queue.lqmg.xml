@@ -19,9 +19,15 @@
 <lqmg xmlns="http://everit.org/lqmg" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   defaultPackage="org.everit.email.queue.schema.qdsl">
   <namingRules>
-    <regexRule>
-      <regex>EMQUEUE_(.*)</regex>
-      <replacement>$1</replacement>
-    </regexRule>
+    <classNameRule>
+      <entity>EMQUEUE_EMAIL_QUEUE</entity>
+      <class>EmailQueue</class>
+      <propertyMappings>
+        <foreignKey>
+          <name>FK_EMQUEUE_EMAIL_QUEUE_EMAIL</name>
+          <property>storedEmailFk</property>
+        </foreignKey>
+      </propertyMappings>
+    </classNameRule>
   </namingRules>
 </lqmg>

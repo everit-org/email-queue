@@ -20,8 +20,8 @@ import java.time.Instant;
 import java.util.List;
 
 import org.everit.email.Email;
-import org.everit.email.queue.PassOnJobParam;
-import org.everit.email.queue.schema.qdsl.QQueueMail;
+import org.everit.email.queue.PassOnJobConfiguration;
+import org.everit.email.queue.schema.qdsl.QEmailQueue;
 import org.everit.email.sender.BulkEmailSender;
 import org.everit.email.sender.EmailSender;
 import org.everit.email.store.EmailStore;
@@ -84,10 +84,10 @@ public class EmailQueueBulkEmailSender implements BulkEmailSender {
   /**
    * Creates pass on job that send mails.
    */
-  public Runnable createPassOnJob(final PassOnJobParam param) {
+  public Runnable createPassOnJob(final PassOnJobConfiguration config) {
     return () -> {
       transactionPropagator.required(() -> {
-        List<QueuedEmailDTO> queuedEmails = selectAndLockQueuedEmail(param);
+        List<QueuedEmailDTO> queuedEmails = selectQueuedEmailForUpdate(config.batchSize);
         try (BulkEmailSender bulkEmailSender = sink.openBulkEmailSender()) {
           for (QueuedEmailDTO queuedEmail : queuedEmails) {
             Email mail = emailStore.read(queuedEmail.storedEmailId);
@@ -103,34 +103,34 @@ public class EmailQueueBulkEmailSender implements BulkEmailSender {
 
   private void deleteQueuedEmail(final long queuedEmailId) {
     querydslSupport.execute((connection, configuration) -> {
-      QQueueMail qQueueMail = QQueueMail.queueMail;
-      return new SQLDeleteClause(connection, configuration, qQueueMail)
-          .where(qQueueMail.queuedEmailId.eq(queuedEmailId))
+      QEmailQueue qEmailQueue = QEmailQueue.emailQueue;
+      return new SQLDeleteClause(connection, configuration, qEmailQueue)
+          .where(qEmailQueue.queuedEmailId.eq(queuedEmailId))
           .execute();
     });
   }
 
-  private void saveQueuedMail(final long storedEmailId) {
+  private void enqueueStoredEmailId(final long storedEmailId) {
     querydslSupport.execute((connection, configuration) -> {
-      QQueueMail qQueueMail = QQueueMail.queueMail;
-      return new SQLInsertClause(connection, configuration, qQueueMail)
-          .set(qQueueMail.storedEmailId, storedEmailId)
-          .set(qQueueMail.storedTimestamp, Timestamp.from(Instant.now()))
+      QEmailQueue qEmailQueue = QEmailQueue.emailQueue;
+      return new SQLInsertClause(connection, configuration, qEmailQueue)
+          .set(qEmailQueue.storedEmailId, storedEmailId)
+          .set(qEmailQueue.timestamp_, Timestamp.from(Instant.now()))
           .execute();
     });
   }
 
-  private List<QueuedEmailDTO> selectAndLockQueuedEmail(final PassOnJobParam param) {
+  private List<QueuedEmailDTO> selectQueuedEmailForUpdate(final int limit) {
     return querydslSupport.execute((connection, configuration) -> {
-      QQueueMail qQueueMail = QQueueMail.queueMail;
+      QEmailQueue qEmailQueue = QEmailQueue.emailQueue;
       return new SQLQuery(connection, configuration)
-          .from(qQueueMail)
-          .orderBy(qQueueMail.storedTimestamp.asc())
-          .limit(param.max)
+          .from(qEmailQueue)
+          .orderBy(qEmailQueue.timestamp_.asc())
+          .limit(limit)
           .forUpdate()
           .list(Projections.fields(QueuedEmailDTO.class,
-              qQueueMail.queuedEmailId,
-              qQueueMail.storedEmailId));
+              qEmailQueue.queuedEmailId,
+              qEmailQueue.storedEmailId));
     });
   }
 
@@ -138,8 +138,7 @@ public class EmailQueueBulkEmailSender implements BulkEmailSender {
   public void sendEmail(final Email mail) {
     transactionPropagator.required(() -> {
       long storedEmailId = emailStore.store(mail);
-      saveQueuedMail(storedEmailId);
-      return null;
+      enqueueStoredEmailId(storedEmailId);
     });
   }
 

@@ -23,7 +23,7 @@ import org.everit.transaction.propagator.TransactionPropagator;
 /**
  * Parameters to Email Queue.
  */
-public class EmailQueueParameter {
+public class EmailQueueConfiguration {
 
   public EmailStore emailStore;
 
@@ -33,22 +33,22 @@ public class EmailQueueParameter {
 
   public TransactionPropagator transactionPropagator;
 
-  public EmailQueueParameter emailStore(final EmailStore emailStore) {
+  public EmailQueueConfiguration emailStore(final EmailStore emailStore) {
     this.emailStore = emailStore;
     return this;
   }
 
-  public EmailQueueParameter querydslSupport(final QuerydslSupport querydslSupport) {
+  public EmailQueueConfiguration querydslSupport(final QuerydslSupport querydslSupport) {
     this.querydslSupport = querydslSupport;
     return this;
   }
 
-  public EmailQueueParameter emailSender(final EmailSender emailSender) {
+  public EmailQueueConfiguration emailSender(final EmailSender emailSender) {
     this.emailSender = emailSender;
     return this;
   }
 
-  public EmailQueueParameter transactionPropagator(
+  public EmailQueueConfiguration transactionPropagator(
       final TransactionPropagator transactionPropagator) {
     this.transactionPropagator = transactionPropagator;
     return this;
