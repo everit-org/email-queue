@@ -48,13 +48,13 @@ public class EmailQueueBulkEmailSender implements BulkEmailSender {
     public long storedEmailId;
   }
 
-  private EmailStore emailStore;
+  private final EmailStore emailStore;
 
-  private QuerydslSupport querydslSupport;
+  private final QuerydslSupport querydslSupport;
 
-  private EmailSender sink;
+  private final EmailSender sink;
 
-  private TransactionPropagator transactionPropagator;
+  private final TransactionPropagator transactionPropagator;
 
   /**
    * Simple constructor.
@@ -125,7 +125,7 @@ public class EmailQueueBulkEmailSender implements BulkEmailSender {
       QEmailQueue qEmailQueue = QEmailQueue.emailQueue;
       return new SQLQuery(connection, configuration)
           .from(qEmailQueue)
-          .orderBy(qEmailQueue.timestamp_.asc())
+          .orderBy(qEmailQueue.timestamp_.asc(), qEmailQueue.queuedEmailId.asc())
           .limit(limit)
           .forUpdate()
           .list(Projections.fields(QueuedEmailDTO.class,
