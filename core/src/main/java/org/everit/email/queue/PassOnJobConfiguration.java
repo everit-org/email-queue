@@ -20,10 +20,10 @@ package org.everit.email.queue;
  */
 public class PassOnJobConfiguration {
 
-  public int batchSize;
+  public int batchMaxSize;
 
-  public PassOnJobConfiguration batchSize(final int batchSize) {
-    this.batchSize = batchSize;
+  public PassOnJobConfiguration batchMaxSize(final int batchSize) {
+    this.batchMaxSize = batchSize;
     return this;
   }
 

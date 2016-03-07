@@ -87,7 +87,7 @@ public class EmailQueueBulkEmailSender implements BulkEmailSender {
   public Runnable createPassOnJob(final PassOnJobConfiguration config) {
     return () -> {
       transactionPropagator.required(() -> {
-        List<QueuedEmailDTO> queuedEmails = selectQueuedEmailForUpdate(config.batchSize);
+        List<QueuedEmailDTO> queuedEmails = selectQueuedEmailForUpdate(config.batchMaxSize);
         try (BulkEmailSender bulkEmailSender = sink.openBulkEmailSender()) {
           for (QueuedEmailDTO queuedEmail : queuedEmails) {
             Email mail = emailStore.read(queuedEmail.storedEmailId);
